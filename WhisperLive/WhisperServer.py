@@ -294,6 +294,9 @@ class ServeClientFasterWhisper(ServeClientBase):
             device=device,
             compute_type="int8" if device == "cpu" else "float16",
             local_files_only=False,
+            device_index=[i for i in range(torch.cuda.device_count())] ,
+            num_workers=3,
+            cpu_threads=8
         )
         self.use_vad = use_vad
 
@@ -311,7 +314,7 @@ class ServeClientFasterWhisper(ServeClientBase):
 
 
         # HYPOTHESIS BUFFER
-        self.hypothesis_buffer:HypothesisBufferPrefix = HypothesisBufferPrefix()
+        # self.hypothesis_buffer:HypothesisBufferPrefix = HypothesisBufferPrefix()
         # self.buffer_time_offset:int = 0
         self.commited:list = []
         # self.last_chunked_at:int = 0
@@ -386,6 +389,8 @@ class ServeClientFasterWhisper(ServeClientBase):
         """
         result, info = self.transcriber.transcribe(
             input_sample,
+            beam_size=3,
+            best_of=3,
             initial_prompt=self.initial_prompt,
             language=self.language,
             task=self.task,
@@ -488,9 +493,9 @@ class ServeClientFasterWhisper(ServeClientBase):
                         self.prev_timestamp_offset = self.timestamp_offset 
                         self.prev_timestamp_offset_set = True
                     self.timestamp_offset += duration
-                    time.sleep(0.25)    # wait for voice activity, result is None when no voice activity
-                    logger.info(f"{self.timestamp_offset,self.prev_timestamp_offset}")
-                    logger.info(f"{self.timestamp_offset - self.prev_timestamp_offset}")
+                    # time.sleep(0.25)    # wait for voice activity, result is None when no voice activity
+                    # logger.info(f"{self.timestamp_offset,self.prev_timestamp_offset}")
+                    # logger.info(f"{self.timestamp_offset - self.prev_timestamp_offset}")
 
                     if self.start_speeking:
                         if self.timestamp_offset - self.prev_timestamp_offset > 2:
@@ -499,10 +504,10 @@ class ServeClientFasterWhisper(ServeClientBase):
                                 self.uttrence_bool = True
                                 # if self.timestamp_offset - self.prev_timestamp_offset > 5:
                                 #     self.disconnect()
-                        if self.timestamp_offset - self.prev_timestamp_offset > 10:
-                            if self.uttrence_bool == False:
-                                self.uttrence_end()
-                                self.uttrence_bool = True
+                        # if self.timestamp_offset - self.prev_timestamp_offset > 10:
+                        #     if self.uttrence_bool == False:
+                        #         self.uttrence_end()
+                        #         self.uttrence_bool = True
                     continue
                 else:
                     self.start_speeking = True

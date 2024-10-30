@@ -2,6 +2,7 @@ from WhisperLive import BasicWhisperClient
 import numpy as np
 import pyaudio
 import logging
+import gzip
 
 
 class Client(BasicWhisperClient):
@@ -40,7 +41,7 @@ try:
         data = stream.read(chunk, exception_on_overflow=False)
         audio_array = bytes_to_float_array(data)
         try:
-            client.send_data_chunk(audio_array.tobytes())
+            client.send_data_chunk(gzip.compress(audio_array.tobytes()))
         except Exception as e:
             print(e)
             break

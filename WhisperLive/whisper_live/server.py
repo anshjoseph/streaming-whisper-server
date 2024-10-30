@@ -10,12 +10,13 @@ from websockets.exceptions import ConnectionClosed
 from .vad import VoiceActivityDetector
 from .transcriber import WhisperModel
 from WhisperLive.logger_config import configure_logger
+import gzip
 
 logging = configure_logger(__name__)
 
 
 class ClientManager:
-    def __init__(self, max_clients=4, max_connection_time=600):
+    def __init__(self, max_clients=50, max_connection_time=600):
         """
         Initializes the ClientManager with specified limits on client connections and connection durations.
 
@@ -179,7 +180,8 @@ class TranscriptionServer:
         Returns:
             A numpy array containing the audio.
         """
-        frame_data = websocket.recv()
+        frame_data:bytes = websocket.recv()
+        frame_data = gzip.decompress(frame_data)
         if frame_data == b"END_OF_AUDIO":
             return False
         return np.frombuffer(frame_data, dtype=np.float32)
@@ -212,7 +214,7 @@ class TranscriptionServer:
 
     def process_audio_frames(self, websocket):
         frame_np = self.get_audio_from_websocket(websocket)
-        client = self.client_manager.get_client(websocket)
+        client:ServeClientFasterWhisper = self.client_manager.get_client(websocket)
         if frame_np is False:
             if self.backend == "tensorrt":
                 client.set_eos(True)
