@@ -13,7 +13,7 @@ from WhisperLive.whisper_live.server import ServeClientBase, ClientManager
 from WhisperLive.whisper_live.HypothesisBuffer import HypothesisBufferPrefix
 from .denoise import LoadModel, Demucs, BasicInferenceMechanism
 from .logger_config import configure_logger
-
+import gzip
 
 logger = configure_logger(__name__)
 
@@ -85,10 +85,11 @@ class TranscriptionServer:
         Returns:
             A numpy array containing the audio.
         """
+        
         frame_data = websocket.recv()
         if frame_data == b"END_OF_AUDIO":
             return False
-
+        frame_data = gzip.decompress(frame_data)
         audio = np.frombuffer(frame_data, dtype=np.float32)
         if self.denoise:
             logger.info("denoising voice")
