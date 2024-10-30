@@ -499,7 +499,7 @@ class ServeClientFasterWhisper(ServeClientBase):
                     # logger.info(f"{self.timestamp_offset - self.prev_timestamp_offset}")
 
                     if self.start_speeking:
-                        if self.timestamp_offset - self.prev_timestamp_offset > 1:
+                        if self.timestamp_offset - self.prev_timestamp_offset > 0.5:
                             if self.uttrence_bool == False:
                                 self.uttrence_end()
                                 self.uttrence_bool = True
