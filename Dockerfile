@@ -17,7 +17,7 @@ RUN pip install -e .
 RUN pip install faster-whisper==1.0.1
 RUN pip install transformers
 
-RUN ct2-transformers-converter --model openai/whisper-tiny --copy_files preprocessor_config.json --output_dir ./Server/ASR/whisper_tiny --quantization float16
+RUN ct2-transformers-converter --model openai/whisper-tiny --copy_files preprocessor_config.json --output_dir ./Server/ASR/whisper_tiny --quantization float32
 WORKDIR Server
 EXPOSE 9000
 CMD ["python3", "Server.py", "-p", "9000"]

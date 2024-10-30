@@ -12,6 +12,8 @@ Features
 
 ![alt text](./img/ar.jpg "Title")  
 
+
+
 ## Install Instruction
 ```shell
 pip install git+https://github.com/bolna-ai/streaming-whisper-server.git
