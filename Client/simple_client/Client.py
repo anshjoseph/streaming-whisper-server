@@ -11,8 +11,8 @@ import websocket
 import uuid
 from queue import Queue
 from websockets.exceptions import *
-
-
+import time
+time_speech = 0
 class BasicWhisperClient:
     def __init__(self,host:str, port:int, model:str) -> None:
         self.ws_url =  f"ws://{host}:{port}"
@@ -115,6 +115,7 @@ class BasicWhisperClient:
                         self.prev_segment = self.curr_segment
                         self.curr_segment = data
                     print(data)
+                    print(time_speech)
                 else:
                     print(data)
                     if data['message'] == 'DISCONNECT':
@@ -150,7 +151,7 @@ class Client(BasicWhisperClient):
         super().onTranscript(segment)
         print(segment)
 
-client = Client("127.0.0.1",9000)
+client = Client("127.0.0.1",9001)
 client.MakeConnectionToServer()
 print(client.retrive_token)
 
@@ -165,6 +166,7 @@ channels = 1
 rate = 16000
 record_seconds = 60000
 frames = b""
+
 p = pyaudio.PyAudio()
 
 stream = p.open(
@@ -179,7 +181,14 @@ try:
         data = stream.read(chunk, exception_on_overflow=False)
         audio_array = bytes_to_float_array(data)
         try:
-            client.send_data_chunk(gzip.compress(audio_array.tobytes()))
+            if _%10 == 0:
+                print("sleep")
+                # time.sleep(5)
+            data = audio_array.tobytes()
+            comp = gzip.compress(data)
+            print((len(comp)/len(data))*100)
+            time_speech += chunk/rate 
+            client.send_data_chunk(comp)
         except Exception as e:
             print(e)
             break

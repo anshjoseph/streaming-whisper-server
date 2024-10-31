@@ -295,8 +295,7 @@ class ServeClientFasterWhisper(ServeClientBase):
             device=device,
             compute_type="int8" if device == "cpu" else "float16",
             local_files_only=False,
-            device_index=[i for i in range(torch.cuda.device_count())] ,
-            num_workers=3,
+            num_workers=2,
             cpu_threads=8
         )
         self.use_vad = use_vad
@@ -390,8 +389,8 @@ class ServeClientFasterWhisper(ServeClientBase):
         """
         result, info = self.transcriber.transcribe(
             input_sample,
-            beam_size=3,
-            best_of=3,
+            beam_size=5,
+            best_of=5,
             initial_prompt=self.initial_prompt,
             language=self.language,
             task=self.task,

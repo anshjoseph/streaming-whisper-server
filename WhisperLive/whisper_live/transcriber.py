@@ -961,7 +961,7 @@ class WhisperModel:
             if not without_timestamps:
                 prompt.append(tokenizer.timestamp_begin)
             prompt.extend(prefix_tokens)
-
+        logging.info(f"PROMPT: {prompt}")
         return prompt
 
     def add_word_timestamps(                                                    # noqa: C901
