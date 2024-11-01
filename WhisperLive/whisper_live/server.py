@@ -347,7 +347,7 @@ class TranscriptionServer:
         if self.client_manager.get_client(websocket):
             self.client_manager.remove_client(websocket)
 
-from WhisperLive.whisper_live.vad import VoiceActivityDetector
+# from WhisperLive.whisper_live.vad import VoiceActivityDetector
 class ServeClientBase(object):
     RATE = 16000
     SERVER_READY = "SERVER_READY"
@@ -357,7 +357,7 @@ class ServeClientBase(object):
     def __init__(self, client_uid, websocket):
         self.client_uid = client_uid
         self.websocket = websocket
-        self.vad = VoiceActivityDetector(0.6)
+        # self.vad = VoiceActivityDetector(0.6)
         self.frames = b""
         self.timestamp_offset = 0.0
         self.frames_np = None
@@ -421,8 +421,7 @@ class ServeClientBase(object):
         if self.frames_np is None:
             self.frames_np = frame_np.copy()
         else:
-            if self.vad(frame_np):
-                self.frames_np = np.concatenate((self.frames_np, frame_np), axis=0)
+            self.frames_np = np.concatenate((self.frames_np, frame_np), axis=0)
         self.lock.release()
 
     def clip_audio_if_no_valid_segment(self):

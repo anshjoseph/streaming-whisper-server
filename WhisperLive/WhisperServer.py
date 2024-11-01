@@ -94,6 +94,8 @@ class TranscriptionServer:
         if self.denoise:
             logger.info("denoising voice")
             out = self.infrence_mech(audio)[0]
+            if out == None:
+                return None
             logger.info(f"denoising voice {out.shape}")
             return out
         else:
@@ -134,8 +136,8 @@ class TranscriptionServer:
             client.disconnect()
             return False
 
-
-        client.add_frames(frame_np)
+        if frame_np != None:
+            client.add_frames(frame_np)
         return True
 
     def recv_audio(self,
