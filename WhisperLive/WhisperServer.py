@@ -93,7 +93,7 @@ class TranscriptionServer:
         audio = np.frombuffer(frame_data, dtype=np.float32)
         if self.denoise:
             logger.info("denoising voice")
-            out = self.infrence_mech(audio)[0]
+            out = self.infrence_mech(audio)
             if out == None:
                 return None
             out = out[0]
