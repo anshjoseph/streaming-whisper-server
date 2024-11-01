@@ -28,6 +28,13 @@ Features
 
 
 
+
+
+
+
+
+
+
 ## Install Instruction
 ```shell
 pip install git+https://github.com/bolna-ai/streaming-whisper-server.git
