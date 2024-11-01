@@ -96,6 +96,7 @@ class TranscriptionServer:
             out = self.infrence_mech(audio)[0]
             if out == None:
                 return None
+            out = out[0]
             logger.info(f"denoising voice {out.shape}")
             return out
         else:
