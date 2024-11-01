@@ -94,7 +94,7 @@ class TranscriptionServer:
         if self.denoise:
             logger.info("denoising voice")
             out = self.infrence_mech(audio)
-            if out == None:
+            if len(out) == 0:
                 return None
             out = out[0]
             logger.info(f"denoising voice {out.shape}")

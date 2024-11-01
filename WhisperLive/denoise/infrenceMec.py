@@ -23,4 +23,4 @@ class BasicInferenceMechanism:
             with torch.no_grad():
                 output:torch.Tensor = self.model(audio[None])[0]
             return output.cpu().detach().numpy()
-        return None
+        return np.array([])
