@@ -137,7 +137,7 @@ class TranscriptionServer:
             client.disconnect()
             return False
 
-        if frame_np != None:
+        if frame_np is None:
             client.add_frames(frame_np)
         return True
 
