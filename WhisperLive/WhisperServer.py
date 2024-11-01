@@ -32,6 +32,9 @@ class TranscriptionServer:
         self.model_list = model_list
         self.default_model_index = 0
         self.no_speech_prob = no_speech_prob
+        self.uttrence_end_threshold = 4
+        self.__uttrencend_count = 0
+        self.__uttrenceend_happen = False 
         if model_list == None or len(model_list) <= 0:
             raise("without model list we can't start server")
         
@@ -95,7 +98,15 @@ class TranscriptionServer:
             logger.info("denoising voice")
             out = self.infrence_mech(audio)
             if len(out) == 0:
+                self.__uttrencend_count += 1
+                if self.__uttrencend_count >= self.uttrence_end_threshold:
+                    if not self.__uttrenceend_happen:
+                        client = self.client_manager.get_client(websocket)
+                        client.uttrence_end()
+                        self.__uttrenceend_happen = True
                 return None
+            self.__uttrencend_count = 0
+            self.__uttrenceend_happen = False
             out = out[0]
             logger.info(f"denoising voice {out.shape}")
             return out

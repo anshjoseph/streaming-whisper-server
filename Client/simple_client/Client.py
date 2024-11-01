@@ -85,10 +85,11 @@ class BasicWhisperClient:
                 __data = self.ws_connection.recv()
                 print(__data)
                 data:dict = json.loads(__data)
+                print(data)
                 if "message" not in data:
                     # self.segments.put(data)
                    
-                    print(data)
+                    # print(data)
                     print(time_speech)
                 else:
                     print(data)
@@ -125,7 +126,7 @@ class Client(BasicWhisperClient):
         super().onTranscript(segment)
         print(segment)
 
-client = Client("127.0.0.1",9000)
+client = Client("127.0.0.1",9001)
 client.MakeConnectionToServer()
 print(client.retrive_token)
 
