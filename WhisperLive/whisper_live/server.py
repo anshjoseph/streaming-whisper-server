@@ -346,8 +346,8 @@ class TranscriptionServer:
         """
         if self.client_manager.get_client(websocket):
             self.client_manager.remove_client(websocket)
-from WhisperLive.whisper_live.vad import VoiceActivityDetector
 
+from WhisperLive.whisper_live.vad import VoiceActivityDetector
 class ServeClientBase(object):
     RATE = 16000
     SERVER_READY = "SERVER_READY"
@@ -356,8 +356,8 @@ class ServeClientBase(object):
 
     def __init__(self, client_uid, websocket):
         self.client_uid = client_uid
-        self.vad = VoiceActivityDetector(0.6)
         self.websocket = websocket
+        self.vad = VoiceActivityDetector(0.6)
         self.frames = b""
         self.timestamp_offset = 0.0
         self.frames_np = None
@@ -409,21 +409,21 @@ class ServeClientBase(object):
         """
         self.lock.acquire()
         # logging.info(f"condition: {self.frames_np.shape[0] > 45*self.RATE}")
-        if self.vad(frame_np):
-            if self.frames_np is not None and self.frames_np.shape[0] > 45*self.RATE:
-                self.frames_offset += 30.0
-                logging.info("added in the frames np buffer")
-                self.frames_np = self.frames_np[int(30*self.RATE):]
-                # check timestamp offset(should be >= self.frame_offset)
-                # this basically means that there is no speech as timestamp offset hasnt updated
-                # and is less than frame_offset
-                if self.timestamp_offset < self.frames_offset:
-                    self.timestamp_offset = self.frames_offset
-            if self.frames_np is None:
-                self.frames_np = frame_np.copy()
-            else:
+        if self.frames_np is not None and self.frames_np.shape[0] > 45*self.RATE:
+            self.frames_offset += 30.0
+            logging.info("added in the frames np buffer")
+            self.frames_np = self.frames_np[int(30*self.RATE):]
+            # check timestamp offset(should be >= self.frame_offset)
+            # this basically means that there is no speech as timestamp offset hasnt updated
+            # and is less than frame_offset
+            if self.timestamp_offset < self.frames_offset:
+                self.timestamp_offset = self.frames_offset
+        if self.frames_np is None:
+            self.frames_np = frame_np.copy()
+        else:
+            if self.vad(frame_np):
                 self.frames_np = np.concatenate((self.frames_np, frame_np), axis=0)
-            self.lock.release()
+        self.lock.release()
 
     def clip_audio_if_no_valid_segment(self):
         """
