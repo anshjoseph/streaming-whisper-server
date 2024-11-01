@@ -73,25 +73,7 @@ class BasicWhisperClient:
         self.SendEOS()
         self.CloseConnectionToServer()
     
-    def AddComited(self, segments):
-        if len(segments) > 1 and len(segments) - self.seg_ptr >= 2:
-            self.commited_list.append(segments[self.seg_ptr]['text'])
-            segments[self.seg_ptr]["is_final"] = True
-            self.onTranscript(segments[self.seg_ptr])
-            self.seg_ptr += 1
-        return segments
-
-            
-
-    def AddAttributes(self,segments:dict):
-        segments_list = [seg for seg in segments['segments']]
-
-        for i,seg in enumerate(segments_list):
-            if seg['text'] in self.commited_list:
-                seg["is_final"] = True
-            else:
-                seg["is_final"] = False
-        return segments_list
+    
 
 
         
@@ -105,15 +87,7 @@ class BasicWhisperClient:
                 data:dict = json.loads(__data)
                 if "message" not in data:
                     # self.segments.put(data)
-                    data = self.AddAttributes(data)
-                    
-                    data = self.AddComited(data)
-
-                    if self.curr_segment == None:
-                        self.curr_segment = data
-                    else:
-                        self.prev_segment = self.curr_segment
-                        self.curr_segment = data
+                   
                     print(data)
                     print(time_speech)
                 else:
@@ -141,7 +115,7 @@ class BasicWhisperClient:
     
 
     def onTranscript(self,segment:dict):
-        pass
+        print(f"TRANSCRIPT: {segment}")
 
 
 class Client(BasicWhisperClient):
@@ -151,7 +125,7 @@ class Client(BasicWhisperClient):
         super().onTranscript(segment)
         print(segment)
 
-client = Client("127.0.0.1",9001)
+client = Client("127.0.0.1",9000)
 client.MakeConnectionToServer()
 print(client.retrive_token)
 
